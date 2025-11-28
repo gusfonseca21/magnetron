@@ -43,11 +43,14 @@ async def pipeline(
     legislatura = camara.extract_legislatura(start_date, end_date)
     deputados_f = camara.extract_deputados.submit(legislatura)
     id_legislatura = legislatura["dados"][0]["id"]
-    anos_passados = legislatura.get("dados", [])[0].get("anosPassados", [])
-    assiduidade_fs = [
-        camara.extract_assiduidade_deputados.with_options(refresh_cache=refresh_cache).submit(cast(Any, deputados_f), ano)
-        for ano in anos_passados
-    ]
+
+    # assiduidade_fs = [
+    #     camara.extract_assiduidade_deputados.with_options(refresh_cache=refresh_cache).submit(cast(Any, deputados_f), ano)
+    #     for ano in anos_passados
+    # ]
+
+    assiduidade_fs = camara.extract_assiduidade_deputados.submit(cast(list[int], deputados_f))
+
     frentes_f = camara.extract_frentes.submit(id_legislatura)
     frentes_membros_f = camara.extract_frentes_membros.submit(cast(Any, frentes_f))
 

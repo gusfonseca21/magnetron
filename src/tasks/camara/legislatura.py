@@ -26,14 +26,7 @@ def extract_legislatura(start_date: date, end_date: date, out_dir: str = "data/c
     json = fetch_json(LEGISLATURA_URL)
     json = cast(dict, json)
 
-    # Enriquecendo os dados sobre Legislatura
-    leg_start_year = int(json.get("dados", [])[0].get("dataInicio")[:4])
-    end_date_year = int((end_date.isoformat())[:4])
-    passed_years = [year for year in range(leg_start_year, end_date_year + 1)]
-    json["dados"][0]["anosPassados"] = passed_years
-
     save_json(json, dest)
-    json = cast(dict, json)
 
     dados = json.get("dados", [])[0]
     create_table_artifact(
@@ -42,9 +35,7 @@ def extract_legislatura(start_date: date, end_date: date, out_dir: str = "data/c
             "data": start_date.isoformat(),
             "id_legislatura": dados.get("id"),
             "data_inicio": dados.get("dataInicio"),
-            "data_fim": dados.get("dataFim"),
-            "anos_passados": dados.get("anosPassados"),
-            "ano_atual": dados.get("anoAtual")
+            "data_fim": dados.get("dataFim")
         }],
         description="Legislatura atual"
     )

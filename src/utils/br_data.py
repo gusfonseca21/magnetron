@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime, date
+from typing import Literal, cast
 
 BR_STATES = [
     "AC", "AL", "AP", "AM", "BA", "CE", "ES", "GO",
