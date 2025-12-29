@@ -18,6 +18,7 @@ def frentes_membros_urls(frentes_ids: list[str]) -> list[str]:
 
 
 @task(
+    task_run_name="extract_frentes_membros",
     retries=APP_SETTINGS.CAMARA.TASK_RETRIES,
     retry_delay_seconds=APP_SETTINGS.CAMARA.TASK_RETRY_DELAY,
     timeout_seconds=APP_SETTINGS.CAMARA.TASK_TIMEOUT,

@@ -23,6 +23,7 @@ def urls_discursos(
 
 
 @task(
+    task_run_name="extract_discursos_deputados",
     retries=APP_SETTINGS.CAMARA.TASK_RETRIES,
     retry_delay_seconds=APP_SETTINGS.CAMARA.TASK_RETRY_DELAY,
     timeout_seconds=APP_SETTINGS.CAMARA.TASK_TIMEOUT,

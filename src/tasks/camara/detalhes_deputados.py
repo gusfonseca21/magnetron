@@ -18,6 +18,7 @@ def detalhes_deputados_urls(deputados_ids: list[int]) -> list[str]:
 
 
 @task(
+    task_run_name="extract_detalhes_deputados",
     retries=APP_SETTINGS.CAMARA.TASK_RETRIES,
     retry_delay_seconds=APP_SETTINGS.CAMARA.TASK_RETRY_DELAY,
     timeout_seconds=APP_SETTINGS.CAMARA.TASK_TIMEOUT,
