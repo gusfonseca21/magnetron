@@ -23,7 +23,7 @@ async def extract_proposicoes_camara(
 ) -> list[int]:
     logger = get_run_logger()
 
-    url = f"https://dadosabertos.camara.leg.br/api/v2/proposicoes?dataInicio={start_date}&dataFim={end_date}&itens=100&ordem=ASC&ordenarPor=id"
+    url = f"{APP_SETTINGS.CAMARA.REST_BASE_URL}proposicoes?dataInicio={start_date}&dataFim={end_date}&itens=100&ordem=ASC&ordenarPor=id"
 
     logger.info("Buscando proposições da Câmara.")
 

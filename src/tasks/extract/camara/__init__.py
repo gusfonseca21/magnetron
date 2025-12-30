@@ -9,6 +9,7 @@ from .frentes import extract_frentes
 from .frentes_membros import extract_frentes_membros
 from .legislatura import extract_legislatura
 from .proposicoes import extract_proposicoes_camara
+from .votacoes import extract_votacoes_camara
 
 __all__ = [
     "extract_assiduidade_deputados",
@@ -22,4 +23,5 @@ __all__ = [
     "extract_proposicoes_camara",
     "extract_detalhes_proposicoes_camara",
     "extract_autores_proposicoes_camara",
+    "extract_votacoes_camara",
 ]

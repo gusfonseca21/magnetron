@@ -10,3 +10,4 @@ class TasksNames:
     EXTRACT_CAMARA_DETALHES_PROPOSICOES = "extract_camara_detalhes_proposicoes"
     EXTRACT_CAMARA_AUTORES_PROPOSICOES = "extract_camara_autores_proposicoes"
     EXTRACT_CAMARA_DESPESAS_DEPUTADOS = "extract_camara_despesas_deputados"
+    EXTRACT_CAMARA_VOTACOES = "extract_camara_votacoes"
