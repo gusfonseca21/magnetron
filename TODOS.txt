@@ -1,0 +1,3 @@
+- Padronizar nomes de futures no pipeline com somente _f
+- Ajustar flow para baixar o endpoint do senado em paralelo aos endpoints do TSE e da Câmara
+- Ajustar função fetch_json para seguir automaticamente o redirecionamento e para baixar os arquivos me formato JSON.

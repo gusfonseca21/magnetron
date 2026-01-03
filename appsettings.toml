@@ -24,6 +24,11 @@ TASK_RETRIES = 0
 TASK_RETRY_DELAY = 5 # Segundos
 TASK_TIMEOUT = 1800 # Segundos
 FETCH_LIMIT = 10 # Número de conexões abertas ao mesmo tempo
-TYPES_PROPOSICOES = "PL,PLP,PEC,MPV,MP,PDL,PRC" # Tipos de proposições a serem buscadas
-ASSIDUIDADE_CACHE_POLICY = "INPUTS"
-ASSIDUIDADE_CACHE_EXPIRATION = 90 # Dias
+
+[SENADO]
+REST_BASE_URL = "https://legis.senado.leg.br/dadosabertos/"
+OUTPUT_EXTRACT_DIR = "output/extract/senado"
+TASK_RETRIES = 0
+TASK_RETRY_DELAY = 5 # Segundos
+TASK_TIMEOUT = 1800 # Segundos
+FETCH_LIMIT = 10 # Número de conexões abertas ao mesmo tempo

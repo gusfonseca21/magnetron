@@ -12,24 +12,24 @@ APP_SETTINGS = load_config()
 
 
 @task(
-    task_run_name="extract_legislatura",
+    task_run_name="extract_camara_legislatura",
     retries=APP_SETTINGS.CAMARA.TASK_RETRIES,
     retry_delay_seconds=APP_SETTINGS.CAMARA.TASK_RETRY_DELAY,
     timeout_seconds=APP_SETTINGS.CAMARA.TASK_TIMEOUT,
 )
 def extract_legislatura(
     start_date: date,
-    end_date: date,
     out_dir: str = APP_SETTINGS.CAMARA.OUTPUT_EXTRACT_DIR,
 ) -> dict:
-    LEGISLATURA_URL = (
-        f"{APP_SETTINGS.CAMARA.REST_BASE_URL}/legislaturas?data={start_date}"
-    )
-
-    dest = Path(out_dir) / "legislatura.json"
     logger = get_run_logger()
 
+    LEGISLATURA_URL = (
+        f"{APP_SETTINGS.CAMARA.REST_BASE_URL}legislaturas?data={start_date}"
+    )
+
     logger.info(f"CÂMARA: Baixando Legislatura atual de {LEGISLATURA_URL} -> {out_dir}")
+
+    dest = Path(out_dir) / "legislatura.json"
 
     json = fetch_json(
         url=LEGISLATURA_URL, max_retries=APP_SETTINGS.ALLENDPOINTS.FETCH_MAX_RETRIES

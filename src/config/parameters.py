@@ -1,5 +1,7 @@
 class TasksNames:
+    # TSE
     EXTRACT_TSE = "extract_tse"
+    # CAMARA
     EXTRACT_CAMARA_LEGISLATURA = "extract_camara_legislatura"
     EXTRACT_CAMARA_DEPUTADOS = "extract_camara_deputados"
     EXTRACT_CAMARA_ASSIDUIDADE = "extract_camara_assiduidade"
@@ -15,3 +17,5 @@ class TasksNames:
     EXTRACT_CAMARA_DETALHES_VOTACOES = "extract_camara_detalhes_votacoes"
     EXTRACT_CAMARA_ORIENTACOES_VOTACOES = "extract_camara_orientacoes_votacoes"
     EXTRACT_CAMARA_VOTOS_VOTACOES = "extract_camara_votos_votacoes"
+    # SENADO
+    EXTRACT_SENADO_COLEGIADOS = "extract_senado_colegiados"

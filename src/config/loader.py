@@ -43,8 +43,15 @@ class CamaraConfig(BaseModel):
     TASK_RETRY_DELAY: int
     TASK_TIMEOUT: int
     FETCH_LIMIT: int
-    ASSIDUIDADE_CACHE_POLICY: str
-    ASSIDUIDADE_CACHE_EXPIRATION: int
+
+
+class SenadoConfig(BaseModel):
+    REST_BASE_URL: str
+    OUTPUT_EXTRACT_DIR: str
+    TASK_RETRIES: int
+    TASK_RETRY_DELAY: int
+    TASK_TIMEOUT: int
+    FETCH_LIMIT: int
 
 
 class AppConfig(BaseModel):
@@ -52,6 +59,7 @@ class AppConfig(BaseModel):
     ALLENDPOINTS: AllEndpoints
     TSE: TSEConfig
     CAMARA: CamaraConfig
+    SENADO: SenadoConfig
 
 
 CONFIG_PATH = "appsettings.toml"

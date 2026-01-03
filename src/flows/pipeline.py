@@ -7,7 +7,7 @@ from prefect.task_runners import ThreadPoolTaskRunner
 
 from config.loader import load_config
 from config.parameters import TasksNames
-from tasks.extract import camara
+from tasks.extract import camara, senado
 from tasks.extract.tse import TSE_ENDPOINTS, extract_tse
 
 APP_SETTINGS = load_config()
@@ -28,9 +28,9 @@ async def pipeline(
     logger.info("Iniciando pipeline")
 
     # TSE: ~30 endpoints em paralelo
-    tse_fs = None
+    extract_tse_f = None
     if TasksNames.EXTRACT_TSE not in ignore_tasks:
-        tse_fs = [
+        extract_tse_f = [
             cast(Any, extract_tse)
             .with_options(refresh_cache=refresh_cache)
             .submit(name, url)
@@ -40,165 +40,199 @@ async def pipeline(
     # CÂMARA DOS DEPUTADOS
 
     ## EXTRACT LEGISLATURA
-    legislatura_f = None
+    extract_camara_legislatura_f = None
     if TasksNames.EXTRACT_CAMARA_LEGISLATURA not in ignore_tasks:
-        legislatura_f = camara.extract_legislatura(start_date, end_date)
+        extract_camara_legislatura_f = camara.extract_legislatura(start_date)
 
     ## EXTRACT DEPUTADOS
-    deputados_f = None
-    if legislatura_f and TasksNames.EXTRACT_CAMARA_DEPUTADOS not in ignore_tasks:
-        deputados_f = camara.extract_deputados.submit(legislatura_f)
+    extract_camara_deputados_f = None
+    if (
+        extract_camara_legislatura_f
+        and TasksNames.EXTRACT_CAMARA_DEPUTADOS not in ignore_tasks
+    ):
+        extract_camara_deputados_f = camara.extract_deputados.submit(
+            extract_camara_legislatura_f
+        )
 
     ## EXTRACT ASSIDUIDADE
-    assiduidade_f = None
-    if deputados_f and TasksNames.EXTRACT_CAMARA_ASSIDUIDADE not in ignore_tasks:
-        resolve_futures_to_results([deputados_f])
-        assiduidade_f = camara.extract_assiduidade_deputados.submit(
-            cast(list[int], deputados_f), start_date, end_date
+    extract_camara_assiduidade_f = None
+    if (
+        extract_camara_deputados_f
+        and TasksNames.EXTRACT_CAMARA_ASSIDUIDADE not in ignore_tasks
+    ):
+        resolve_futures_to_results(extract_camara_deputados_f)
+        extract_camara_assiduidade_f = camara.extract_assiduidade_deputados.submit(
+            cast(list[int], extract_camara_deputados_f), start_date, end_date
         )
 
     ## EXTRACT FRENTES
-    frentes_f = None
-    if legislatura_f and TasksNames.EXTRACT_CAMARA_FRENTES not in ignore_tasks:
-        id_legislatura = legislatura_f["dados"][0]["id"]
-        frentes_f = camara.extract_frentes.submit(id_legislatura)
+    extract_camara_frentes_f = None
+    if (
+        extract_camara_legislatura_f
+        and TasksNames.EXTRACT_CAMARA_FRENTES not in ignore_tasks
+    ):
+        id_legislatura = extract_camara_legislatura_f["dados"][0]["id"]
+        extract_camara_frentes_f = camara.extract_frentes.submit(id_legislatura)
 
     ## EXTRACT FRENTES MEMBROS
-    frentes_membros_f = None
-    if frentes_f and TasksNames.EXTRACT_CAMARA_FRENTES_MEMBROS not in ignore_tasks:
-        frentes_membros_f = camara.extract_frentes_membros.submit(cast(Any, frentes_f))
+    extract_camara_frentes_membros_f = None
+    if (
+        extract_camara_frentes_f
+        and TasksNames.EXTRACT_CAMARA_FRENTES_MEMBROS not in ignore_tasks
+    ):
+        extract_camara_frentes_membros_f = camara.extract_frentes_membros.submit(
+            cast(Any, extract_camara_frentes_f)
+        )
 
     ## EXTRACT DETALHES DEPUTADOOS
-    detalhes_deputados_f = None
+    extract_camara_detalhes_deputados_f = None
     if (
-        frentes_membros_f
+        extract_camara_frentes_membros_f
         and TasksNames.EXTRACT_CAMARA_DETALHES_DEPUTADOS not in ignore_tasks
     ):
-        if frentes_membros_f:
-            resolve_futures_to_results(frentes_membros_f)
-        detalhes_deputados_f = camara.extract_detalhes_deputados.submit(
-            cast(list[int], deputados_f)
+        if extract_camara_frentes_membros_f:
+            resolve_futures_to_results(extract_camara_frentes_membros_f)
+        extract_camara_detalhes_deputados_f = camara.extract_detalhes_deputados.submit(
+            cast(list[int], extract_camara_deputados_f)
         )
 
     ## EXTRACT DISCURSOS DEPUTADOS
-    discursos_deputados_f = None
+    extract_camara_discursos_deputados_f = None
     if (
-        deputados_f
+        extract_camara_deputados_f
         and TasksNames.EXTRACT_CAMARA_DISCURSOS_DEPUTADOS not in ignore_tasks
     ):
-        if detalhes_deputados_f:
-            resolve_futures_to_results(detalhes_deputados_f)
-        discursos_deputados_f = camara.extract_discursos_deputados.submit(
-            cast(list[int], deputados_f), start_date, end_date
+        if extract_camara_detalhes_deputados_f:
+            resolve_futures_to_results(extract_camara_detalhes_deputados_f)
+        extract_camara_discursos_deputados_f = (
+            camara.extract_discursos_deputados.submit(
+                cast(list[int], extract_camara_deputados_f), start_date, end_date
+            )
         )
 
     ## EXTRACT PROPOSIÇÕES CÂMARA
-    proposicoes_camara_f = None
+    extract_camara_proposicoes_f = None
     if TasksNames.EXTRACT_CAMARA_PROPOSICOES not in ignore_tasks:
-        if discursos_deputados_f:
-            resolve_futures_to_results(discursos_deputados_f)
-        proposicoes_camara_f = camara.extract_proposicoes_camara.submit(
+        if extract_camara_discursos_deputados_f:
+            resolve_futures_to_results(extract_camara_discursos_deputados_f)
+        extract_camara_proposicoes_f = camara.extract_proposicoes_camara.submit(
             start_date, end_date
         )
 
     ## EXTRACT DETALHES PROPOSIÇÕES CÂMARA
-    detalhes_proposicoes_camara_f = None
+    extract_camara_detalhes_proposicoes_f = None
     if (
-        proposicoes_camara_f
+        extract_camara_proposicoes_f
         and TasksNames.EXTRACT_CAMARA_DETALHES_PROPOSICOES not in ignore_tasks
     ):
-        if proposicoes_camara_f:
-            resolve_futures_to_results([proposicoes_camara_f])
-        detalhes_proposicoes_camara_f = (
+        if extract_camara_proposicoes_f:
+            resolve_futures_to_results(extract_camara_proposicoes_f)
+        extract_camara_detalhes_proposicoes_f = (
             camara.extract_detalhes_proposicoes_camara.submit(
-                cast(list[int], proposicoes_camara_f)
+                cast(list[int], extract_camara_proposicoes_f)
             )
         )
 
     ## EXTRACT AUTORES PROPOSIÇÕES CÂMARA
-    autores_proposicoes_camara_f = None
+    extract_camara_autores_proposicoes_f = None
     if (
-        proposicoes_camara_f
+        extract_camara_proposicoes_f
         and TasksNames.EXTRACT_CAMARA_AUTORES_PROPOSICOES not in ignore_tasks
     ):
-        if detalhes_proposicoes_camara_f:
-            resolve_futures_to_results(detalhes_proposicoes_camara_f)
-        autores_proposicoes_camara_f = camara.extract_autores_proposicoes_camara.submit(
-            cast(list[int], proposicoes_camara_f)
+        if extract_camara_proposicoes_f:
+            resolve_futures_to_results(extract_camara_proposicoes_f)
+        extract_camara_autores_proposicoes_f = (
+            camara.extract_autores_proposicoes_camara.submit(
+                cast(list[int], extract_camara_proposicoes_f)
+            )
         )
 
     ## EXTRACT VOTAÇÕES CÂMARA
-    votacoes_camara_f = None
+    extract_camara_votacoes_f = None
     if TasksNames.EXTRACT_CAMARA_VOTACOES not in ignore_tasks:
-        if autores_proposicoes_camara_f:
-            resolve_futures_to_results(autores_proposicoes_camara_f)
-        votacoes_camara_f = camara.extract_votacoes_camara.submit(start_date, end_date)
+        if extract_camara_autores_proposicoes_f:
+            resolve_futures_to_results(extract_camara_autores_proposicoes_f)
+        extract_camara_votacoes_f = camara.extract_votacoes_camara.submit(
+            start_date, end_date
+        )
 
     ## EXTRACT DETALHES VOTAÇÕES CÂMARA
-    detalhes_votacoes_camara_fs = None
+    extract_camara_detalhes_votacoes_f = None
     if (
-        votacoes_camara_f
+        extract_camara_votacoes_f
         and TasksNames.EXTRACT_CAMARA_DETALHES_VOTACOES not in ignore_tasks
     ):
-        detalhes_votacoes_camara_fs = camara.extract_detalhes_votacoes_camara.submit(
-            cast(list[str], votacoes_camara_f)
+        extract_camara_detalhes_votacoes_f = (
+            camara.extract_detalhes_votacoes_camara.submit(
+                cast(list[str], extract_camara_votacoes_f)
+            )
         )
 
     ## EXTRACT ORIENTAÇÕES VOTAÇÕES CÂMARA
-    orientacoes_votacoes_camara_fs = None
+    extract_camara_orientacoes_votacoes_f = None
     if (
-        votacoes_camara_f
+        extract_camara_votacoes_f
         and TasksNames.EXTRACT_CAMARA_ORIENTACOES_VOTACOES not in ignore_tasks
     ):
-        if detalhes_votacoes_camara_fs:
-            resolve_futures_to_results(detalhes_votacoes_camara_fs)
-        orientacoes_votacoes_camara_fs = (
+        if extract_camara_detalhes_votacoes_f:
+            resolve_futures_to_results(extract_camara_detalhes_votacoes_f)
+        extract_camara_orientacoes_votacoes_fs = (
             camara.extract_orientacoes_votacoes_camara.submit(
-                cast(list[str], votacoes_camara_f)
+                cast(list[str], extract_camara_votacoes_f)
             )
         )
 
     ## EXTRACT VOTOS VOTAÇÕES CÂMARA
-    votos_votacoes_camara_fs = None
+    extract_camara_votos_votacoes_f = None
     if (
-        votacoes_camara_f
+        extract_camara_votacoes_f
         and TasksNames.EXTRACT_CAMARA_VOTOS_VOTACOES not in ignore_tasks
     ):
-        if orientacoes_votacoes_camara_fs:
-            resolve_futures_to_results(orientacoes_votacoes_camara_fs)
-        votos_votacoes_camara_fs = camara.extract_votos_votacoes_camara.submit(
-            cast(list[str], votacoes_camara_f)
+        if extract_camara_orientacoes_votacoes_f:
+            resolve_futures_to_results(extract_camara_orientacoes_votacoes_f)
+        extract_camara_votos_votacoes_f = camara.extract_votos_votacoes_camara.submit(
+            cast(list[str], extract_camara_votacoes_f)
         )
 
     ## EXTRACT DESPESAS DEPUTADOS
     # BUGADO ""Parâmetro(s) inválido(s).""
-    despesas_deputados_f = None
+    extract_camara_despesas_deputados_f = None
     if (
-        legislatura_f
+        extract_camara_legislatura_f
         and TasksNames.EXTRACT_CAMARA_DESPESAS_DEPUTADOS not in ignore_tasks
     ):
-        resolve_futures_to_results([discursos_deputados_f])
-        despesas_deputados_f = camara.extract_despesas_deputados.submit(
-            cast(list[int], deputados_f), start_date, legislatura_f
+        resolve_futures_to_results(extract_camara_discursos_deputados_f)
+        extract_camara_despesas_deputados_f = camara.extract_despesas_deputados.submit(
+            cast(list[int], extract_camara_deputados_f),
+            start_date,
+            extract_camara_legislatura_f,
         )
+
+    # SENADO
+
+    ## EXTRACT COLEGIADOS
+    extract_senado_colegiados_f = None
+    if TasksNames.EXTRACT_SENADO_COLEGIADOS not in ignore_tasks:
+        extract_senado_colegiados_f = senado.extract_colegiados.submit()
 
     return resolve_futures_to_results(
         {
-            "extract_tse": tse_fs,
-            "extract_camara_deputados": deputados_f,
-            "extract_camara_assiduidade": assiduidade_f,
-            "extract_camara_frentes": frentes_f,
-            "extract_camara_frentes_membros": frentes_membros_f,
-            "extract_camara_detalhes_deputados": detalhes_deputados_f,
-            "extract_camara_discursos_deputados": discursos_deputados_f,
-            "extract_camara_proposicoes": proposicoes_camara_f,
-            "extract_camara_detalhes_proposicoes": detalhes_proposicoes_camara_f,
-            "extract_camara_autores_proposicoes": autores_proposicoes_camara_f,
-            "extract_camara_votacoes": votacoes_camara_f,
-            "extract_camara_detalhes_votacoes": detalhes_votacoes_camara_fs,
-            "extract_camara_orientacoes_votacoes": orientacoes_votacoes_camara_fs,
-            "votos_votacoes_camara_fs": votos_votacoes_camara_fs,
-            "extract_camara_despesas_deputados": despesas_deputados_f,
+            "extract_tse": extract_tse_f,
+            "extract_camara_legislatura": extract_camara_legislatura_f,
+            "extract_camara_deputados": extract_camara_deputados_f,
+            "extract_camara_assiduidade": extract_camara_assiduidade_f,
+            "extract_camara_frentes": extract_camara_frentes_f,
+            "extract_camara_frentes_membros": extract_camara_frentes_membros_f,
+            "extract_camara_detalhes_deputados": extract_camara_detalhes_deputados_f,
+            "extract_camara_discursos_deputados": extract_camara_discursos_deputados_f,
+            "extract_camara_proposicoes": extract_camara_proposicoes_f,
+            "extract_camara_detalhes_proposicoes": extract_camara_detalhes_proposicoes_f,
+            "extract_camara_autores_proposicoes": extract_camara_autores_proposicoes_f,
+            "extract_camara_votacoes": extract_camara_votacoes_f,
+            "extract_camara_detalhes_votacoes": extract_camara_detalhes_votacoes_f,
+            "extract_camara_orientacoes_votacoes": extract_camara_orientacoes_votacoes_f,
+            "votos_votacoes_camara_fs": extract_camara_votos_votacoes_f,
+            "extract_camara_despesas_deputados": extract_camara_despesas_deputados_f,
         }
     )
 
