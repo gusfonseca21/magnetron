@@ -24,7 +24,7 @@ def deputados_url(legislatura: dict) -> str:
     timeout_seconds=APP_SETTINGS.CAMARA.TASK_TIMEOUT,
 )
 def extract_deputados(
-    legislatura: dict, out_dir: str = APP_SETTINGS.CAMARA.OUTPUT_EXTRACT_DIR
+    legislatura: dict, out_dir: str | Path = APP_SETTINGS.CAMARA.OUTPUT_EXTRACT_DIR
 ) -> list[int]:
     logger = get_run_logger()
     url = deputados_url(legislatura)

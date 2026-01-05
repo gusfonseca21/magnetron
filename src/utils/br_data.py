@@ -32,7 +32,7 @@ BR_UFS = [
 
 
 # Senadores cumprem duas legislaturas (8 anos) em seus mandatos
-def get_election_years(current_year: int = datetime.now().year) -> list[int]:
+def get_election_years(current_year: int) -> list[int]:
     oldest_election = 2018
     most_recent_election = 2022
 

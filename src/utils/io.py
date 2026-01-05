@@ -55,6 +55,9 @@ def download_stream(
                 else:
                     return str(dest_path)
         except Exception as e:
+            print(
+                f"Erro ao tentar baixar arquivos por stream, tentativa {attempt}: {e}"
+            )
             if attempt < max_retries - 1:
                 time.sleep(2**attempt)
             else:
@@ -66,6 +69,8 @@ def download_stream(
 def unzip_file(zip_path: str | Path) -> list[str]:
     zip_path = Path(zip_path)
     extract_dir = zip_path.parent
+
+    extract_dir.mkdir(parents=True, exist_ok=True)
 
     with zipfile.ZipFile(zip_path, "r") as zf:
         zf.extractall(extract_dir)

@@ -1,6 +1,9 @@
 class TasksNames:
     # TSE
-    EXTRACT_TSE = "extract_tse"
+    EXTRACT_TSE = "extract_tse_candidatos"
+    EXTRACT_TSE = "extract_tse_prestacao_contas"
+    EXTRACT_TSE = "extract_tse_redes_sociais"
+    EXTRACT_TSE = "extract_tse_votacao"
     # CAMARA
     EXTRACT_CAMARA_LEGISLATURA = "extract_camara_legislatura"
     EXTRACT_CAMARA_DEPUTADOS = "extract_camara_deputados"
