@@ -22,9 +22,12 @@ def frentes_url(id_legislatura: int) -> str:
     timeout_seconds=APP_SETTINGS.CAMARA.TASK_TIMEOUT,
 )
 async def extract_frentes(
-    id_legislatura: int, out_dir: str | Path = APP_SETTINGS.CAMARA.OUTPUT_EXTRACT_DIR
+    legislatura: dict, out_dir: str | Path = APP_SETTINGS.CAMARA.OUTPUT_EXTRACT_DIR
 ) -> list[str]:
     logger = get_run_logger()
+
+    id_legislatura = legislatura["dados"][0]["id"]
+
     url = frentes_url(id_legislatura)
     dest = Path(out_dir) / "frentes.ndjson"
     logger.info(f"Congresso: buscando Frentes de {url} -> {dest}")

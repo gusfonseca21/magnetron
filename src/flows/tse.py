@@ -16,12 +16,12 @@ from utils.br_data import BR_UFS, get_election_years
 @flow(
     name="TSE Flow",
     flow_run_name="tse_flow",
-    description="Gerenciamento de tasks do endpoint TSE.",
+    description="Orquestramento de tasks do endpoint TSE.",
     log_prints=True,
 )
 def tse_flow(start_date: date, refresh_cache: bool, ignore_tasks: list[str]):
     logger = get_run_logger()
-    logger.info("Iniciando execução do Flow do TSE")
+    logger.info("Iniciando execução da Flow do TSE")
 
     elections_years = get_election_years(start_date.year)
 

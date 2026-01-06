@@ -1,4 +1,2 @@
-- Refatorar a pipeline utilizando child flows e adicionando o conceito de assets.
 - Podemos manipular o estado final da execução de um flow para impedir que, se apenas um endpoint retornar com erro ou se apenas algumas urls retornarem com erro no download de uma lista, a flow continue retornando com sucesso.
 - Task Runners, Global concurrency limits
-- Ajustar função fetch_json para seguir automaticamente o redirecionamento e para baixar os arquivos me formato JSON.

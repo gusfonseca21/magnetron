@@ -1,3 +1,9 @@
+class FlowsNames:
+    TSE = "tse"
+    CAMARA = "camara"
+    SENADO = "senado"
+
+
 class TasksNames:
     # TSE
     EXTRACT_TSE_CANDIDATOS = "extract_tse_candidatos"

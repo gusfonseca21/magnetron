@@ -99,7 +99,9 @@ def fetch_json(
 
     log(f"Baixando URL: {url}")
 
-    with httpx.Client(timeout=timeout) as client:
+    with httpx.Client(
+        timeout=timeout, follow_redirects=True, headers={"Accept": "application/json"}
+    ) as client:
         for attempt in range(max_retries):
             try:
                 r = client.get(url)
