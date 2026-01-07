@@ -5,7 +5,7 @@ from prefect import get_run_logger, task
 from prefect.artifacts import acreate_table_artifact
 
 from config.loader import load_config
-from utils.fetch_many_camara import fetch_many_camara
+from utils.fetch_many_jsons import fetch_many_jsons
 from utils.io import save_ndjson
 
 APP_SETTINGS = load_config()
@@ -34,7 +34,7 @@ async def extract_autores_proposicoes_camara(
 
     logger.info(f"Baixando autores de {len(urls)} proposições da Câmara")
 
-    jsons = await fetch_many_camara(
+    jsons = await fetch_many_jsons(
         urls=urls,
         limit=APP_SETTINGS.CAMARA.FETCH_LIMIT,
         max_retries=APP_SETTINGS.ALLENDPOINTS.FETCH_MAX_RETRIES,
