@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Any
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
@@ -41,3 +42,49 @@ def is_first_page(url: str) -> bool:
     # Se não tem 'pagina' OU é '1', é primeira página
     pagina = params.get("pagina", ["1"])[0]
     return str(pagina) in ["1", ""]
+
+
+def generate_date_urls_senado(
+    url: str, start_date: date, end_date: date
+) -> list[str] | None:
+    """
+    Calcula e retorna as URLs necessárias para baixar os dados do Senado de acordo com as datas de início e fim selecionadas. A maioria dos endpoints do Senado aceitam apenas a diferença de um ano entre esses argumentos.
+    """
+    if "%STARTDATE%" not in url or "%ENDDATE%" not in url:
+        raise ValueError(
+            f"A URL não possui as strings corretas de '%STARTDATE%' ou '%ENDDATE' para realizara a substituição: {url}"
+        )
+
+    if end_date < start_date:
+        raise ValueError(
+            f"A data de início ({start_date}) não pode ser maior que a data de fim ({end_date})"
+        )
+
+    if start_date.year == end_date.year:
+        url_ret = url.replace("%STARTDATE%", start_date.isoformat()).replace(
+            "%ENDDATE%", end_date.isoformat()
+        )
+        return [url_ret]
+
+    if start_date.year != end_date.year:
+        urls_ret = []
+        for year in range(start_date.year, (end_date.year + 1)):
+            if year == start_date.year:
+                url_ret = url.replace("%STARTDATE%", start_date.isoformat()).replace(
+                    "%ENDDATE%", f"{year}-12-31"
+                )
+                urls_ret.append(url_ret)
+
+            if year != start_date.year and year != end_date.year:
+                url_ret = url.replace("%STARTDATE%", f"{year}-01-01").replace(
+                    "%ENDDATE%", f"{year}-12-31"
+                )
+                urls_ret.append(url_ret)
+
+            if year == end_date.year:
+                url_ret = url.replace("%STARTDATE%", f"{year}-01-01").replace(
+                    "%ENDDATE%", end_date.isoformat()
+                )
+                urls_ret.append(url_ret)
+
+        return urls_ret

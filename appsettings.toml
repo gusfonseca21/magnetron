@@ -31,4 +31,4 @@ OUTPUT_EXTRACT_DIR = "output/extract/senado"
 TASK_RETRIES = 0
 TASK_RETRY_DELAY = 5 # Segundos
 TASK_TIMEOUT = 1800 # Segundos
-FETCH_LIMIT = 10 # Número de conexões abertas ao mesmo tempo
+FETCH_LIMIT = 5 # Número de conexões abertas ao mesmo tempo

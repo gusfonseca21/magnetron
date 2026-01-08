@@ -42,6 +42,12 @@ async def extract_detalhes_senadores(
         validate_results=False,
     )
 
+    await acreate_table_artifact(
+        key="detalhes-senadores",
+        table=[{"num_senadores": len(jsons)}],
+        description="Detalhes de senadores",
+    )
+
     dest = Path(out_dir) / "detalhes_senadores.ndjson"
 
     return save_ndjson(cast(list[dict], jsons), dest)

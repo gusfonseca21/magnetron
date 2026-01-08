@@ -30,3 +30,4 @@ class TasksNames:
     EXTRACT_SENADO_COLEGIADOS = "extract_senado_colegiados"
     EXTRACT_SENADO_SENADORES = "extract_senado_senadores"
     EXTRACT_SENADO_DETALHES_SENADORES = "extract_senado_detalhes_senadores"
+    EXTRACT_SENADO_DISCURSOS_SENADORES = "extract_senado_discursos_senadores"
