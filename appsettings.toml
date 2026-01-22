@@ -22,7 +22,7 @@ PORTAL_BASE_URL = "https://www.camara.leg.br/"
 OUTPUT_EXTRACT_DIR = "output/extract/camara"
 TASK_RETRIES = 0
 TASK_RETRY_DELAY = 5 # Segundos
-TASK_TIMEOUT = 1800 # Segundos
+TASK_TIMEOUT = 8000 # Segundos
 FETCH_LIMIT = 10 # Número de conexões abertas ao mesmo tempo
 
 [SENADO]
@@ -30,5 +30,5 @@ REST_BASE_URL = "https://legis.senado.leg.br/dadosabertos/"
 OUTPUT_EXTRACT_DIR = "output/extract/senado"
 TASK_RETRIES = 0
 TASK_RETRY_DELAY = 5 # Segundos
-TASK_TIMEOUT = 1800 # Segundos
+TASK_TIMEOUT = 8000 # Segundos
 FETCH_LIMIT = 5 # Número de conexões abertas ao mesmo tempo

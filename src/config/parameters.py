@@ -31,3 +31,7 @@ class TasksNames:
     EXTRACT_SENADO_SENADORES = "extract_senado_senadores"
     EXTRACT_SENADO_DETALHES_SENADORES = "extract_senado_detalhes_senadores"
     EXTRACT_SENADO_DISCURSOS_SENADORES = "extract_senado_discursos_senadores"
+    EXTRACT_SENADO_DESPESAS_SENADORES = "extract_senado_despesas_senadores"
+    EXTRACT_SENADO_PROCESSOS = "extract_senado_processos"
+    EXTRACT_SENADO_DETALHES_PROCESSOS = "extract_senado_detalhes_processos"
+    EXTRACT_SENADO_VOTACOES = "extract_senado_votacoes"

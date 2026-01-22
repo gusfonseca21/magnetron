@@ -24,7 +24,7 @@ def pipeline(
     end_date: date = datetime.now().date(),
     refresh_cache: bool = False,
     ignore_tasks: list[str] = ["extract_camara_despesas_deputados"],
-    ignore_flows: list[str] = ["tse", "camara"],
+    ignore_flows: list[str] = [],
 ):
     logger = get_run_logger()
     logger.info("Iniciando Pipeline ETL")
